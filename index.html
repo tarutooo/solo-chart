@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プロジェクト管理ツール</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>プロジェクト管理ツール</h1>
+  
+  <!-- タブナビゲーション -->
+  <div class="tab-container">
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="gantt">ガントチャート</button>
+      <button class="tab-btn" data-tab="incremental">インクリメンタルモデル</button>
+    </div>
+  </div>
+
+  <!-- ガントチャートタブのコンテンツ -->
+  <div id="gantt-tab" class="tab-content active">
+    <div id="spreadsheet-container">
+      <table id="task-table">
+        <thead>
+          <tr>
+            <th>タスク名</th>
+            <th>開始日</th>
+            <th>終了日</th>
+            <th>日数</th>
+            <th>メモ</th>
+            <th>アクション</th>
+          </tr>
+        </thead>
+        <tbody id="task-table-body">
+          <!-- タスク行はJavaScriptで動的に生成されます -->
+        </tbody>
+      </table>
+      <button id="add-row-btn">新しいタスクを追加</button>
+      <button id="reset-btn" style="margin-left: 10px; background-color: #e74c3c;">データをリセット</button>
+    </div>
+
+    <h2>ガントチャートビュー</h2>
+    <div id="gantt-chart-container" class="gantt-chart-container">
+      <!-- ガントチャートテーブルはJavaScriptでここに描画されます -->
+    </div>
+  </div>
+
+  <!-- インクリメンタルモデルタブのコンテンツ -->
+  <div id="incremental-tab" class="tab-content">
+    <div class="incremental-container">
+      <h2>インクリメンタルモデル管理</h2>
+      
+      <div class="increment-planning">
+        <h3>タスク</h3>
+        <div class="increment-form">
+          <input type="text" id="increment-name" placeholder="インクリメント名">
+          <input type="date" id="increment-start">
+          <input type="date" id="increment-end">
+          <textarea id="increment-goals" placeholder="目標・成果物"></textarea>
+          <button id="add-increment-btn">タスク追加</button>
+        </div>
+      </div>
+
+      <div class="increments-list">
+        <h3>インクリメント一覧</h3>
+        <div class="reorder-controls">
+          <p class="reorder-hint">📋 インクリメントを選択して順番を変更できます</p>
+          <div class="reorder-buttons">
+            <button id="move-up-btn" class="reorder-btn" disabled>↑ 上に移動</button>
+            <button id="move-down-btn" class="reorder-btn" disabled>↓ 下に移動</button>
+            <button id="clear-selection-btn" class="reorder-btn" disabled>選択解除</button>
+          </div>
+        </div>
+        <div id="increments-container" class="sortable-container">
+          <!-- インクリメントはJavaScriptで動的に生成されます -->
+        </div>
+      </div>
+
+      <div class="increment-timeline">
+        <h3>インクリメントタイムライン</h3>
+        <div id="increment-timeline-container" class="timeline-container">
+          <!-- タイムラインはJavaScriptで動的に生成されます -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
