@@ -1,0 +1,665 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin: 20px;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+h1, h2 {
+  color: #0056b3;
+  border-bottom: 2px solid #0056b3;
+  padding-bottom: 10px;
+}
+
+#spreadsheet-container {
+  margin-bottom: 30px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#task-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+#task-table th, #task-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+#task-table th {
+  background-color: #3496ff;
+  color: white;
+}
+
+#task-table input[type="text"], #task-table input[type="date"], #task-table textarea {
+  width: 95%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* メモ欄を大きめに（5列目がメモ） */
+#task-table td:nth-child(5) textarea {
+  width: 98%;
+  min-height: 72px; /* 3行分程度 */
+  resize: vertical; /* 必要なら伸縮可能 */
+}
+
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #3496ff;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.delete-btn {
+  background-color: #ef384a;
+}
+
+.delete-btn:hover {
+  background-color: #ef384a;
+}
+
+.gantt-chart-container {
+  overflow-x: auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.gantt-table {
+  width: auto; /* 日の列幅に応じて全体幅を可変 */
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.gantt-table th, .gantt-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  font-size: 12px;
+}
+/* 日列の幅を固定化 */
+.gantt-table thead th.day { width: 40px; min-width: 40px; }
+.gantt-table tbody td { width: 40px; min-width: 40px; }
+
+.gantt-table th {
+  background-color: #f2f2f2;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+/* ヘッダー（2段） */
+.month-row th.month {
+  background-color: #e9ecef;
+  font-weight: 600;
+}
+.day-row th.day {
+  background-color: #f8f9fa;
+  color: #666;
+  font-weight: 500;
+}
+.day-row th.weekend {
+  background-color: #f3f6ff;
+}
+
+/* 週ヘッダー */
+.week-row th.week {
+  background-color: #f4f6f8;
+  color: #555;
+  font-weight: 700;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* 日ヘッダー（曜日+日にち） */
+.day-row th { padding: 4px 6px; height: 34px; text-align: center; vertical-align: middle; }
+.day-row th .dow { display: block; font-size: 10px; color: #888; line-height: 1; height: 12px; }
+.day-row th .dom { display: block; font-size: 12px; font-weight: 600; line-height: 1; height: 14px; }
+
+/* 週初め・月初めの縦境界を強調 */
+/* 幅に影響しない境界表示に変更 */
+.gantt-table th.week-start, .gantt-table td.week-start { box-shadow: inset 2px 0 0 #cbd5e1; border-left: none; }
+.gantt-table th.month-start, .gantt-table td.month-start { box-shadow: inset 3px 0 0 #94a3b8; border-left: none; }
+
+/* 今日の縦帯 */
+.gantt-table th.today, .gantt-table td.today {
+  background-image: linear-gradient(180deg, rgba(255, 235, 59, 0.25), rgba(255, 235, 59, 0.15));
+}
+
+.gantt-task-name {
+  width: 160px; /* 左端列は少し広めに固定 */
+  text-align: left;
+  position: sticky;
+  left: 0;
+  background-color: #fff;
+  z-index: 5; /* ヘッダーやボディより前面に */
+  white-space: normal; /* テキストを折り返し可能に */
+  box-shadow: 2px 0 0 #ddd; /* 右側の仕切り線を擬似表示 */
+  background-clip: padding-box; /* 背景のにじみ防止 */
+}
+
+/* ヘッダー側のタスク名セルは更に前面へ */
+.gantt-table thead .gantt-task-name { z-index: 6; }
+
+/* 行の高さを安定させる */
+.gantt-table tbody tr { height: 36px; }
+.gantt-table tbody td { line-height: 1.2; height: 36px; }
+
+/* 日数セルの見た目 */
+#task-table td .days-cell, #task-table td.days-cell {
+  text-align: center;
+  color: #444;
+  min-width: 64px;
+  display: inline-block;
+}
+#task-table td:first-child textarea {
+  width: 98%;
+  min-height: 48px; /* 2行分程度 */
+  resize: vertical;
+}
+
+.gantt-bar-cell {
+  position: relative;
+}
+
+.gantt-bar {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  background-color: #7DB9DE;
+  border-radius: 5px;
+  left: 0;
+  right: 0;
+}
+
+/* 週末の縦帯（ボディ） */
+.gantt-table td.weekend {
+  background-image: linear-gradient(90deg, rgba(0,0,0,0.03) 50%, rgba(0,0,0,0.0) 50%);
+  background-size: 8px 100%;
+}
+
+/* タスク塗りがあるセルは装飾を抑制し固定色を最前面に */
+.gantt-table td.filled {
+  background-image: none !important;
+}
+
+/* タブ機能のスタイル */
+.tab-container {
+  margin-bottom: 20px;
+}
+
+.tab-nav {
+  display: flex;
+  border-bottom: 2px solid #0056b3;
+  background-color: #fff;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+}
+
+.tab-btn {
+  background-color: #f8f9fa;
+  border: none;
+  padding: 15px 25px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+}
+
+.tab-btn:hover {
+  background-color: #e9ecef;
+  color: #333;
+}
+
+.tab-btn.active {
+  background-color: #0056b3;
+  color: white;
+  border-bottom: 3px solid #003d82;
+}
+
+.tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* インクリメンタルモデル用のスタイル */
+.incremental-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.increment-planning {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+}
+
+.increment-form {
+  display: grid;
+  grid-template-columns: 1fr 150px 150px 2fr 150px;
+  gap: 10px;
+  align-items: start;
+}
+
+.increment-form input,
+.increment-form textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.increment-form textarea {
+  resize: vertical;
+  min-height: 40px;
+}
+
+#add-increment-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+#add-increment-btn:hover {
+  background-color: #218838;
+}
+
+.increments-list {
+  margin-bottom: 30px;
+}
+
+.reorder-controls {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.reorder-hint {
+  font-size: 14px;
+  color: #007bff;
+  font-weight: normal;
+  margin: 0 0 10px 0;
+}
+
+.reorder-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.reorder-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.reorder-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.reorder-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+.sortable-container {
+  position: relative;
+}
+
+.increment-card {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.increment-card:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transform: translateY(-1px);
+}
+
+.increment-card.selected {
+  border: 2px solid #007bff;
+  background-color: #e3f2fd;
+  box-shadow: 0 3px 8px rgba(0,123,255,0.2);
+}
+
+.increment-card.selected::before {
+  content: '✓';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.increment-number {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-right: 15px;
+  background-color: #007bff;
+  color: white;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 14px;
+  min-width: 35px;
+}
+
+.increment-content {
+  flex: 1;
+}
+
+.increment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.increment-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.increment-dates {
+  font-size: 14px;
+  color: #666;
+}
+
+.increment-goals {
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.increment-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.increment-actions button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.edit-increment-btn {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.delete-increment-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.increment-timeline {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.timeline-container {
+  margin-top: 15px;
+  position: relative;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 6px;
+  border-left: 4px solid #007bff;
+  position: relative;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideInUp 0.5s ease forwards;
+}
+
+.timeline-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transform: translateX(5px) translateY(0);
+}
+
+@keyframes slideInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid #007bff;
+  z-index: 1;
+}
+
+.timeline-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 15px;
+  background-color: #007bff;
+  z-index: 0;
+}
+
+.timeline-date {
+  font-weight: 600;
+  color: #007bff;
+  margin-right: 15px;
+  min-width: 120px;
+  text-align: center;
+}
+
+.timeline-content {
+  flex: 1;
+}
+
+.timeline-title {
+  font-weight: 500;
+  color: #333;
+}
+
+.timeline-duration {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
+/* フロー矢印のスタイル */
+.flow-arrow {
+  text-align: center;
+  margin: 10px 0;
+  color: #007bff;
+  font-size: 18px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  60% {
+    transform: translateY(-3px);
+  }
+}
+
+/* ドラッグ中の視覚的フィードバック */
+.sortable-container.drag-active {
+  background-color: #f8f9ff;
+}
+
+.increment-card.drag-placeholder {
+  background-color: #e3f2fd;
+  border: 2px dashed #2196f3;
+  opacity: 0.5;
+}
+
+/* Phase番号のスタイル強化 */
+.timeline-date strong {
+  display: inline-block;
+  background: linear-gradient(45deg, #007bff, #0056b3);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .increment-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .tab-btn {
+    padding: 12px 15px;
+    font-size: 14px;
+  }
+  
+  .increment-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .drag-handle {
+    align-self: flex-end;
+    margin: 0 0 10px 0;
+  }
+  
+  .timeline-date {
+    min-width: 80px;
+    font-size: 14px;
+  }
+}
+
+/* メモタブ */
+.memo-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.memo-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#project-memo {
+  width: 100%;
+  min-height: 280px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.memo-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #666;
+  font-size: 13px;
+}
+
+#memo-saved-indicator {
+  color: #28a745;
+}
+
+.memo-footer.saving #memo-saved-indicator {
+  color: #6c757d;
+}
+
